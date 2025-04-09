@@ -1,0 +1,89 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{float}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
+\title{Численное решение 1D-уравнения Лапласа}
+\author{Харитонов Фёдор, 203}
+\date{Апрель 2025}
+
+\begin{document}
+
+\maketitle
+
+\section*{Постановка задачи}
+Рассматривается краевая задача Дирихле для уравнения Лапласа:
+\[ -u''(x) = f(x), \quad x \in (0,1), \quad u(0) = a, \quad u(1) = b, \]
+где точное решение выбрано как \( u(x) = \sin(x) \). Тогда
+\[ f(x) = \sin(x), \quad a = 0, \quad b = \sin(1). \]
+
+Цель — численно найти приближённое решение задачи с использованием метода конечных разностей и оценить сходимость по \( C \)- и дискретной \( L_2 \)-нормам.
+
+\section*{Метод численного решения}
+Интервал \((0,1)\) разбивается на равномерную сетку:
+\[ x_i = ih, \quad h = \frac{1}{N}, \quad i = 0, \dots, N. \]
+Искомые значения \( y_i \approx u(x_i) \). Аппроксимация:
+\[ -\frac{y_{i-1} - 2y_i + y_{i+1}}{h^2} = f(x_i), \quad i = 1, \dots, N-1. \]
+Получается линейная система с трёхдиагональной матрицей, решаемая методом прогонки.
+
+\section*{Результаты численных экспериментов}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$N$ & $h$ & $C$-норма ошибки & $L_2$-норма ошибки & Время (сек.) \\
+\midrule
+\input{errors_table.tex}
+\bottomrule
+\end{tabular}
+\caption{Сходимость численного решения при разных $N$}
+\end{table}
+
+\section*{Графики}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{loglogaxis}[
+    xlabel={$h$}, ylabel={Ошибка},
+    legend pos=south east,
+    grid=major,
+    width=0.75\textwidth, height=0.5\textwidth
+]
+\addplot table [x=h, y=C_norm, col sep=comma] {errors.csv};
+\addplot table [x=h, y=L2_norm, col sep=comma] {errors.csv};
+\legend{$C$-норма, $L_2$-норма}
+\end{loglogaxis}
+\end{tikzpicture}
+\caption{Зависимость ошибки от шага сетки}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{semilogxaxis}[
+    xlabel={$N$}, ylabel={Время (сек.)},
+    legend pos=north west,
+    grid=major,
+    width=0.75\textwidth, height=0.5\textwidth
+]
+\addplot table [x=N, y=time, col sep=comma] {errors.csv};
+\legend{Время вычислений}
+\end{semilogxaxis}
+\end{tikzpicture}
+\caption{Зависимость времени вычислений от числа узлов $N$}
+\end{figure}
+
+\section*{Выводы}
+Наблюдаем квадратичную сходимость численного метода, что соответствует ожидаемой точности \( O(h^2) \) аппроксимации второй производной. Время вычислений растёт линейно с увеличением числа узлов $N$.
+
+\end{document}
