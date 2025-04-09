@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-double compute_C_norm(double* y, double* exact, int size) {
+double compute_C(double* y, double* exact, int size) {
     double max = 0.0;
     for (int i = 0; i < size; i++) {
         double err = fabs(y[i] - exact[i]);
@@ -14,7 +14,7 @@ double compute_C_norm(double* y, double* exact, int size) {
     return max;
 }
 
-double compute_L2_norm(double* y, double* exact, int size, double h) {
+double compute_L2(double* y, double* exact, int size, double h) {
     double sum = 0.0;
     for (int i = 0; i < size; i++) {
         double err = y[i] - exact[i];
@@ -81,8 +81,8 @@ int main(void) {
             y[i + 1] = alpha[i] * y[i + 2] + beta[i];
         }
 
-        double C_norm = compute_C_norm(y, u, N + 1);
-        double L2_norm = compute_L2_norm(y, u, N + 1, h);
+        double C_norm = compute_C(y, u, N + 1);
+        double L2_norm = compute_L2(y, u, N + 1, h);
 
         clock_t end_time = clock();
         double time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
